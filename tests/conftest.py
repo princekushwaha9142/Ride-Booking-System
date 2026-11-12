@@ -39,7 +39,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 
 @pytest.fixture(scope="session", autouse=True)
 def apply_migrations() -> None:
-    """Build the test schema with the REAL migrations, so migrations are tested too."""
+    
     cfg = Config(str(_ROOT / "alembic.ini"))
     cfg.set_main_option("script_location", str(_ROOT / "alembic"))
     command.upgrade(cfg, "head")
@@ -47,9 +47,10 @@ def apply_migrations() -> None:
 
 @pytest.fixture(autouse=True)
 def clean_database(apply_migrations: None) -> None:
-    """Every test starts from empty tables, so tests are independent and deterministic."""
+    
     with engine.begin() as conn:
-        conn.execute(text("TRUNCATE TABLE refresh_tokens, users RESTART IDENTITY CASCADE"))
+        conn.execute(
+            text("TRUNCATE TABLE vehicles, driver_profiles, refresh_tokens, users RESTART IDENTITY CASCADE"))
 
 
 @pytest.fixture()
